@@ -90,7 +90,7 @@ def _build_cmd(audio, model, language, task, output_format,
                initial_prompt, condition_prev, no_speech,
                compute_type="int8", vad_filter=False, best_of=5,
                compression_ratio_threshold=2.4, logprob_threshold=-1.0) -> list[str]:
-    cmd = [_WHISPER, audio, "--verbose", "True"]
+    cmd = [_WHISPER, audio]
     cmd += ["--model", model]
     if _IS_CT2:
         # faster-whisper only: quantisation (speed/accuracy) + optional VAD.

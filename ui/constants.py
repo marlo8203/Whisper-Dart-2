@@ -8,7 +8,7 @@ LOG_DIR        = APP_DIR / "logs"
 LOG_FILE       = LOG_DIR / "whisperdart.log"   # all levels (INFO+)
 ERR_FILE       = LOG_DIR / "whisperdart.err"   # warnings + errors only
 DB_FILE        = APP_DIR / "whisper.db"
-RECORDING_STORAGE = APP_DIR / "recording-storage"
+RECORDING_STORAGE = PROJECT_ROOT / "recording-storage"
 DEFAULT_SAVE   = str(Path.home() / "Desktop")
 
 # Sentinel project ids

@@ -12,14 +12,13 @@ dist/
 .venv/
 venv/
 env/
-ui/recording-storage/
 
 # Environment variables
 .env
 .env.*
 
 # Databases / local files
-*.db
+# *.db
 *.sqlite
 *.sqlite3
 
