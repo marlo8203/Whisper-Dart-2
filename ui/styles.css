@@ -1,0 +1,588 @@
+/* ════════════════════════════════════════════════════════════════════
+   Whisper Dart — stylesheet
+   `{PURPLE}` is substituted at load time with the sidebar accent colour.
+   ════════════════════════════════════════════════════════════════════ */
+
+.gradio-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    min-height: auto !important;
+    padding-bottom: 16px !important;
+}
+/* Pin Gradio's footer to the bottom of the viewport. Without this it sits
+   below the row, which is taller than 100vh, so it's only reachable by
+   scrolling. The sidebar's calc(100vh - 80px) reserves the 80px we need here. */
+.gradio-container footer {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 8px 0 !important;
+    background: var(--background-fill-primary) !important;
+    border-top: 1px solid var(--border-color-primary) !important;
+    z-index: 100 !important;
+}
+/* Stop Gradio's outer wrappers from forcing a viewport min-height */
+.gradio-container > .main,
+.gradio-container > main,
+.gradio-container .contain {
+    min-height: auto !important;
+}
+/* Gradio caps the inner .main/.wrap at ~1920px and centres it, leaving big
+   empty margins on wide displays. Force the content to use the full window. */
+.gradio-container .main,
+.gradio-container .wrap {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Tiny toggle column at top-left ─────────────────────────────────── */
+#toggle-col {
+    flex: 0 0 44px !important;
+    max-width: 44px !important;
+    min-width: 44px !important;
+    padding: 0 !important;
+}
+#btn-sidebar button {
+    width: 32px !important; min-width: 32px !important; height: 32px !important;
+    padding: 0 !important; margin: 4px 6px 0 0 !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    border: 1px solid var(--border-color-primary) !important;
+    color: var(--body-text-color) !important;
+    font-size: 0.85rem !important; line-height: 1 !important;
+}
+#btn-sidebar button:hover {
+    background: var(--background-fill-secondary) !important;
+}
+
+/* Settings (config) toggle + column ──────────────────────────────── */
+#config-toggle-col {
+    flex: 0 0 40px !important;
+    max-width: 40px !important;
+    min-width: 40px !important;
+    padding: 0 !important;
+}
+#btn-config button {
+    width: 32px !important; min-width: 32px !important; height: 32px !important;
+    padding: 0 !important; margin: 4px auto 0 auto !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    border: 1px solid var(--border-color-primary) !important;
+    color: var(--body-text-color) !important;
+    font-size: 0.95rem !important; line-height: 1 !important;
+}
+#btn-config button:hover { background: var(--background-fill-secondary) !important; }
+#config-col {
+    background: var(--background-fill-secondary) !important;
+    border: 1px solid var(--border-color-primary) !important;
+    border-radius: 14px !important;
+    padding: 14px !important;
+    height: calc(100vh - 80px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;   /* scroll vertically; never spill sideways */
+    /* Gradio's column is a flex container; without nowrap it wraps overflowing
+       content into a *second column* (the "shift to a new column" bug). Force
+       a single column so tall content overflows down and the panel scrolls. */
+    flex-wrap: nowrap !important;
+}
+#config-col[class*="hide"] { display: none !important; }
+/* Let every flex child shrink below its content width so the settings stack
+   and wrap within the column instead of forcing a horizontal scrollbar. */
+#config-col, #config-col * { min-width: 0 !important; }
+/* Pack all sections at the top (no grow → no gap in the middle) and keep their
+   natural height (no shrink → tall content overflows down and the panel
+   scrolls). Gradio gives inner columns flex-grow:1, which caused a big gap. */
+#config-col > * { flex: 0 0 auto !important; }
+/* Stack Gradio's two-column rows (Task/Format, Temperature/Beam, …) vertically
+   inside the narrow settings column so nothing spills past the edge — the
+   column scrolls vertically instead. */
+#config-col .row { flex-direction: column !important; align-items: stretch !important; }
+#config-col .block, #config-col .form, #config-col .column {
+    max-width: 100% !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PURPLE SIDEBAR
+   ════════════════════════════════════════════════════════════════════ */
+#sidebar {
+    background: {PURPLE} !important;
+    border-radius: 14px !important;
+    padding: 14px !important;
+    color: #fff !important;
+    margin-right: 12px;
+    box-shadow: 0 2px 12px rgba(91, 79, 230, 0.18);
+    position: relative;
+    /* Leave ~60px at the bottom so Gradio's footer
+       (Use via API · Built with Gradio · Settings) is visible without scrolling. */
+    height: calc(100vh - 80px) !important;
+    display: flex;
+    flex-direction: column;
+    align-self: stretch !important;
+}
+/* When Gradio sets visible=False on the column it adds a `.hide` class
+   (Svelte hash suffix changes per build). Explicitly collapse the column
+   — our #sidebar rule has higher specificity than .hide.svelte-XXX so we
+   need to spell this out. */
+#sidebar[class*="hide"] {
+    display: none !important;
+}
+#sidebar * { color: #fff !important; }
+#sidebar > * { flex: 0 0 auto !important; }
+/* The meetings list is the only flexible child — it absorbs leftover space.
+   gr.HTML wraps our markup in an intermediate div, so stretch the whole chain
+   (block → wrapper → #meetings) with flex instead of relying on height:100%. */
+#sidebar > #meetings-list {
+    flex: 1 1 0 !important;
+    min-height: 150px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+}
+#meetings-list > div {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+#meetings { flex: 1 1 auto !important; min-height: 0 !important; }
+
+#sidebar-title h1, #sidebar-title h2, #sidebar-title h3,
+#sidebar-title p {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    margin: 0 0 14px 2px !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+/* "+ New Transcript" + 🗑 row */
+/* Search bar + compact "+" new-transcript button on one row */
+#search-row {
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+}
+#btn-new-tx { flex: 0 0 auto !important; }
+#btn-new-tx button {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    background: #fff !important;
+    color: {PURPLE} !important;
+    font-weight: 700 !important;
+    font-size: 1.3rem !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: transform 0.08s, box-shadow 0.15s;
+}
+#btn-new-tx button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+}
+
+/* Search box */
+#search-box { flex: 1 1 auto !important; margin-bottom: 0 !important; }
+#search-box input {
+    background: rgba(255,255,255,0.13) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    font-size: 0.88rem !important;
+}
+#search-box input::placeholder { color: rgba(255,255,255,0.55) !important; }
+#search-box input:focus {
+    background: rgba(255,255,255,0.18) !important;
+    border-color: rgba(255,255,255,0.4) !important;
+    outline: none !important;
+}
+
+/* Project dropdown — keep default Gradio styling, only spacing tweak. */
+#sb-project-select { margin-top: 12px !important; }
+
+/* New project row */
+#new-project-row { gap: 6px !important; margin-top: 6px !important; }
+#new-project-input input {
+    background: rgba(255,255,255,0.13) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    font-size: 0.83rem !important;
+}
+#new-project-input input::placeholder { color: rgba(255,255,255,0.55) !important; }
+#btn-new-project button {
+    background: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    border-radius: 8px !important;
+    font-size: 1.1rem !important;
+    padding: 0 !important;
+    height: 36px !important;
+    width: 36px !important;
+    min-width: 36px !important;
+}
+#btn-new-project button:hover { background: rgba(255,255,255,0.28) !important; }
+
+/* Upload audio/video button (replaces the old dropzone) */
+#upload-btn {
+    width: 100% !important;
+    margin-top: 6px !important;
+}
+#upload-btn button, #upload-btn .wrap {
+    width: 100% !important;
+    font-size: 0.82rem !important;
+    border-style: dashed !important;
+}
+
+/* Hidden command bus + trigger — off-screen but present in the DOM. */
+#cmd-bus, #cmd-trigger {
+    position: absolute !important;
+    width: 1px !important; height: 1px !important;
+    padding: 0 !important; margin: -1px !important;
+    overflow: hidden !important; clip: rect(0,0,0,0) !important;
+    border: 0 !important; opacity: 0 !important;
+}
+
+/* ── Meetings list (custom HTML) ──────────────────────────────────── */
+#meetings {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Toolbar with sort controls */
+.mt-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 9px;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    flex: 0 0 auto;
+}
+.mt-sort-label {
+    font-size: 0.72rem; color: rgba(255,255,255,0.55) !important;
+    text-transform: uppercase; letter-spacing: 0.06em;
+}
+.mt-sort { display: flex; align-items: center; gap: 2px; }
+.mt-sort-btn, .mt-sort-dir {
+    background: transparent; border: none; cursor: pointer;
+    color: rgba(255,255,255,0.6) !important;
+    font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;
+    transition: background-color .12s, color .12s;
+}
+.mt-sort-btn:hover, .mt-sort-dir:hover { background: rgba(255,255,255,0.14); color:#fff !important; }
+.mt-sort-btn.active { background: rgba(255,255,255,0.20); color:#fff !important; font-weight: 600; }
+.mt-sort-dir { font-size: 0.8rem; }
+
+/* Scrollable row list */
+.mt-list { flex: 1 1 0; overflow-y: auto; padding: 4px; }
+.mt-list::-webkit-scrollbar { width: 6px; }
+.mt-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }
+
+.mt-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 8px 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: background-color .12s;
+}
+.mt-row:hover { background: rgba(255,255,255,0.12); }
+.mt-row.mt-selected { background: rgba(255,255,255,0.20); box-shadow: inset 3px 0 0 #fff; }
+
+.mt-body { flex: 1 1 auto; min-width: 0; }
+.mt-title-row { display: flex; align-items: center; gap: 5px; }
+.mt-title {
+    color: #fff; font-size: 0.86rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mt-meta {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.62); font-size: 0.72rem; margin-top: 1px;
+}
+.mt-meta .mt-dot { opacity: 0.5; }
+.mt-date { font-variant-numeric: tabular-nums; }
+
+.mt-draft-dot { color: rgba(255,255,255,0.55); font-size: 0.8rem; }
+.mt-run-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #4ade80; box-shadow: 0 0 6px #4ade80;
+    display: inline-block; animation: mt-pulse 1s ease-in-out infinite;
+}
+@keyframes mt-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* Tag chips */
+.mt-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.mt-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 1px 8px; border-radius: 999px;
+    font-size: 0.68rem; font-weight: 500;
+    color: #fff !important;
+    background: color-mix(in srgb, var(--tag-color) 28%, transparent);
+    border: 1px solid color-mix(in srgb, var(--tag-color) 55%, transparent);
+}
+.mt-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--tag-color); }
+
+/* Kebab button */
+.mt-kebab {
+    flex: 0 0 auto;
+    background: transparent; border: none; cursor: pointer;
+    color: rgba(255,255,255,0.6) !important;
+    font-size: 1.25rem; line-height: 1; padding: 4px 7px; border-radius: 6px;
+    opacity: 0.55; transition: opacity .12s, background-color .12s;
+}
+.mt-row:hover .mt-kebab, .mt-row.mt-selected .mt-kebab { opacity: 1; }
+.mt-kebab:hover { background: rgba(255,255,255,0.20); color:#fff !important; }
+
+.mt-empty { color: rgba(255,255,255,0.55); font-size: 0.8rem; text-align: center; padding: 24px 8px; }
+
+/* High specificity to beat the global `#sidebar * { color:#fff }` rule —
+   otherwise the rename text is white on the white input background. */
+#sidebar input.mt-rename-input {
+    width: 100%; font-size: 0.86rem; font-weight: 600;
+    color: #111 !important; background: #fff !important;
+    border: none; border-radius: 5px;
+    padding: 2px 6px; outline: 2px solid rgba(91, 79, 230, 0.7);
+    -webkit-text-fill-color: #111 !important;
+}
+#sidebar input.mt-rename-input::selection {
+    background: rgba(91, 79, 230, 0.35); color: #111 !important;
+}
+
+/* ── Floating action menu + tag picker (appended to <body>) ─────────── */
+.mt-menu {
+    position: fixed; z-index: 9999; min-width: 190px;
+    background: #fff; color: #1f2430;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    box-shadow: 0 12px 34px rgba(0,0,0,0.20), 0 2px 8px rgba(0,0,0,0.10);
+    padding: 6px; font-size: 0.86rem;
+    animation: mt-menu-in .1s ease-out;
+}
+@keyframes mt-menu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.mt-menu-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    background: transparent; border: none; cursor: pointer;
+    padding: 8px 10px; border-radius: 8px; text-align: left;
+    color: #1f2430 !important; font-size: 0.86rem;
+}
+.mt-menu-item:hover { background: #f2f3f7; }
+.mt-menu-item.mt-danger { color: #dc2626 !important; }
+.mt-menu-item.mt-danger:hover { background: #fdecec; }
+.mt-mi-ico { width: 16px; text-align: center; opacity: 0.75; }
+.mt-mi-arrow { margin-left: auto; opacity: 0.5; }
+
+.mt-tagpicker { min-width: 220px; padding: 8px; }
+.mt-tag-search { margin-bottom: 6px; }
+.mt-tag-input {
+    width: 100%; box-sizing: border-box;
+    padding: 7px 10px; border: 1px solid #e2e4ea; border-radius: 8px;
+    font-size: 0.84rem; color: #1f2430 !important; background: #fff;
+}
+.mt-tag-input:focus { outline: none; border-color: {PURPLE}; }
+.mt-tag-list { max-height: 240px; overflow-y: auto; }
+.mt-tag-opt {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    background: transparent; border: none; cursor: pointer;
+    padding: 7px 8px; border-radius: 8px; text-align: left;
+    color: #1f2430 !important; font-size: 0.85rem;
+}
+.mt-tag-opt:hover { background: #f2f3f7; }
+.mt-tag-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--tag-color); flex: 0 0 auto; }
+.mt-tag-name { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mt-tag-check { color: {PURPLE}; opacity: 0; font-weight: 700; }
+.mt-tag-opt.checked .mt-tag-check { opacity: 1; }
+.mt-tag-empty { color: #8a8f9c; font-size: 0.8rem; padding: 10px; text-align: center; }
+
+/* ════════════════════════════════════════════════════════════════════
+   MAIN AREA
+   ════════════════════════════════════════════════════════════════════ */
+/* Kill Gradio's orange "generating" glow/pulse on output boxes during a run. */
+.generating,
+.block.generating,
+.form.generating,
+.generating > .wrap {
+    border-color: var(--border-color-primary) !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+.generating::before, .generating::after {
+    animation: none !important;
+    display: none !important;
+}
+
+/* Read-only name header above the Audio box */
+#name-header { margin: 2px 0 6px 0 !important; }
+#name-header h3 {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    padding: 2px 2px 8px 2px !important;
+    border-bottom: 1px solid var(--border-color-primary) !important;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Save To: single-line  →  "Save To:"  [path field]  [Browse] */
+#save-to-group {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    border: 1px solid var(--border-color-primary) !important;
+    border-radius: var(--radius-lg) !important;
+    background: var(--background-fill-secondary) !important;
+    overflow: hidden !important;
+    gap: 0 !important;
+    padding-left: 10px !important;
+}
+#save-to-group::before {
+    content: "Save To:";
+    flex: 0 0 auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--body-text-color);
+    white-space: nowrap;
+    margin-right: 8px;
+}
+#save-to-group > * {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+#save-dir-tb { flex: 1 !important; min-width: 0 !important; }
+#save-dir-tb input, #save-dir-tb textarea {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 8px 12px !important;
+    height: 38px !important;
+}
+#btn-browse {
+    flex: 0 0 auto !important;
+    border-left: 1px solid var(--border-color-primary) !important;
+}
+#btn-browse button {
+    height: 38px !important;
+    border-radius: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--body-text-color) !important;
+    font-size: 0.85rem !important;
+    padding: 0 16px !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+}
+#btn-browse button:hover { background: var(--background-fill-primary) !important; }
+
+/* Transcribe + Cancel button row */
+#action-row { gap: 8px !important; margin-top: 6px !important; }
+#btn-cancel button { font-weight: 600 !important; }
+
+/* Restart Server button (config column, admin) */
+#btn-restart button {
+    background: transparent !important;
+    border: 1px solid var(--border-color-primary) !important;
+    color: var(--body-text-color) !important;
+    font-size: 0.85rem !important;
+}
+#btn-restart button:hover {
+    background: #b91c1c !important;
+    border-color: #b91c1c !important;
+    color: #fff !important;
+}
+#restart-status { text-align: center !important; font-size: 0.85rem !important; }
+#author-credit {
+    text-align: center;
+    font-size: 0.72rem;
+    color: rgba(128, 128, 128, 0.55);
+    margin-top: 16px;
+    letter-spacing: 0.03em;
+}
+#btn-cancel button:disabled { opacity: 0.4 !important; cursor: not-allowed !important; }
+
+/* macOS-style progress bar (HTML) */
+#progress-bar {
+    margin-top: 2px !important;
+    margin-bottom: 8px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+.pbar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.pbar {
+    position: relative;
+    flex: 1 1 auto;
+    height: 8px;
+    background: rgba(128, 128, 128, 0.22);
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+.pbar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, {PURPLE} 0%, #8b7dff 100%);
+    border-radius: 999px;
+    transition: width 0.25s ease-out;
+    box-shadow: 0 0 8px rgba(139, 125, 255, 0.5);
+}
+.pbar-pct {
+    flex: 0 0 auto;
+    min-width: 42px;
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--body-text-color);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Output area */
+#info-bar {
+    padding: 10px 14px !important;
+    border-radius: var(--radius-lg) !important;
+    background: var(--background-fill-secondary) !important;
+    border: 1px solid var(--border-color-primary) !important;
+    font-size: 0.88rem !important;
+    min-height: 44px !important;
+}
+#log-box textarea {
+    font-family: 'Menlo', 'Monaco', monospace !important;
+    font-size: 0.77rem !important;
+    line-height: 1.6 !important;
+}
+
+/* Sidebar resize handle (drag the right edge) */
+.resize-handle {
+    position: absolute !important;
+    top: 0; right: -4px;
+    width: 8px; height: 100%;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 10;
+}
+.resize-handle::before {
+    content: "";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px; height: 36px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 2px;
+    transition: background-color 0.15s, height 0.15s;
+}
+.resize-handle:hover::before, .resize-handle.dragging::before {
+    background: #fff;
+    height: 60px;
+}
